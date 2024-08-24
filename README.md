@@ -1,23 +1,34 @@
-# README
+<h1 align="center">
+  <br>
+  ps2utils
+  <br>
+</h1>
 
-## About
+[![License: GPL-3.0](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0.html)
 
-Svelte + Tailwind Template for Wails
-Frontend updated to the latest packages and app versions for modern app development.
+<h4 align="center">Utility Tools for PS2 (Go)</h4>
 
-- @sveltejs/vite-plugin-svelte@2.4.5
-- autoprefixer@10.4.15
-- postcss@8.4.28
-- svelte@4.2.0
-- tailwindcss@3.3.3
-- vite@4.4
+<p align="center">
+  <a href="#key-features">Key Features</a> •
+  <a href="#download">Download</a> •
+</p>
 
-## Live Development
+## Key Features
 
-To run in live development mode, run `wails dev` in the project directory. In another terminal, go into the `frontend`
-directory and run `npm run dev`. The frontend dev server will run on http://localhost:34115. Connect to this in your
-browser and connect to your application.
+* PS2 Manager:
+  - FMCB/Funtuna Settings
+  - Folders/Fixes
+  - Updates
+* Game Manager:
+  - ISO/ZSO Info
+* POPS Manager:
+  - CUE -> VCD
+* OPL Manager
+  - APPS Installer
+  - Game Config
+* SaveData Manager
+  - Conversion Tool
 
-## Building
+## Download
 
-To build a redistributable, production mode package, use `wails build`.
+You can [download](https://github.com/Mat1az/ps2utils/releases/latest) the latest version of ps2utils.
