@@ -15,19 +15,27 @@
 
 ## Key Features
 
-* PS2 Manager:
+* PS2 Manager: (Soon...)
   - FMCB/Funtuna Settings
   - Folders/Fixes
   - Updates
-* Game Manager:
-  - ISO/ZSO Info
-* POPS Manager:
+* Game Manager: (Work in progress)
+  - ISO/ZSO Verifier
+  - Compatibility
+  - Game Fixes
+* POPS Manager: (Soon...)
+  - VCD Verifier
   - CUE -> VCD
-* OPL Manager
+* OPL Manager (Soon...)
   - APPS Installer
   - Game Config
-* SaveData Manager
+* SaveData Manager (Soon...)
   - Conversion Tool
+* Device Manager (Soon...)
+  - Validators:
+    - Partition Table
+    - Format/Cluster
+    - Fragmentation
 
 ## Download
 
