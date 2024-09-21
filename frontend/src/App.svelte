@@ -1,5 +1,6 @@
 <script>
-    import {SelectFile} from '../wailsjs/go/main/App';
+    import {RepairFile, SelectFile} from '../wailsjs/go/main/App';
+
 
     let games = []
     let index = 1
@@ -52,26 +53,48 @@
         switch (id) {
             case 0: {
                 //id
-                /** ISO Priority
-                 * 1. Extract ID
-                 * 2. Checksum
-                 * 3. Hex Find
-                 * ZSO Priority
-                 * 1. ZSO -> ISO
-                 */
-                alert('[Get ID] Coming soon...')
+                if (confirm("Problem: Game has no ID on it's name.\n- Older OPL will not boot it.\n- HDL won't be able to inject it if ZSO format.\n\nFind ID & rename? Please, confirm")) {
+                    RepairFile(e.currentTarget.value, id).then(r => {
+                        alert(r)
+                    })
+                } else {
+                    alert("Cancelled")
+                }
                 break;
             }
             case 1: {
                 //opl
                 //FIXME Info needed...
-                alert('OPL supports only .iso and .zso extensions. Otherwise, they will not show up.')
+                if (confirm("Problem: OPL supports only .iso and .zso extensions. Otherwise, they will not show up.\n\nRename extension? Please, confirm")) {
+                    RepairFile(e.currentTarget.value, id).then(r => {
+                        alert(r)
+                    })
+                } else {
+                    alert("Cancelled")
+                }
                 break;
             }
             case 2: {
                 //hdl
                 //FIXME 2352...?
-                alert('File block size isn\'t 2048. Zero-fill the file until its size is divisible by 2048.')
+                if (confirm("Problem: File block size isn't 2048.\n\nZero-fill the file until its size is divisible by 2048? Please, confirm")) {
+                    RepairFile(e.currentTarget.value, id).then(r => {
+                        alert(r + ' bytes added to the file.')
+                    })
+                } else {
+                    alert("Cancelled")
+                }
+                break;
+            }
+            case 3: {
+                //hdl, ZSO without ID
+                if (confirm("Problem: HDL unable to inject ZSO without ID.\n\nFind ID & rename? Please, confirm")) {
+                    RepairFile(e.currentTarget.value, id).then(r => {
+                        alert(r)
+                    })
+                } else {
+                    alert("Cancelled")
+                }
                 break;
             }
         }
@@ -172,7 +195,19 @@
                         {/if}
                     </td>
                     <td>
-                        {#if hdl}&#9989;
+                        {#if hdl}
+                            {#if format === 2 || format === 3 || format === 4}
+                                {#if id.length === 0}
+                                    <button value={url} class="hover:bg-slate-700 py-2 px-4 rounded"
+                                            on:click={(e)=>repair(3,e)}>
+                                        &#10060;
+                                    </button>
+                                {:else}
+                                    &#9989;
+                                {/if}
+                            {:else}
+                                &#9989;
+                            {/if}
                         {:else}
                             <button value={url} class="hover:bg-slate-700 py-2 px-4 rounded"
                                     on:click={(e)=>repair(2,e)}>

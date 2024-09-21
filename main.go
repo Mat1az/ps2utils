@@ -17,9 +17,10 @@ func main() {
 
 	// Create application with options
 	err := wails.Run(&options.App{
-		Title:  "ps2-utils",
-		Width:  1200,
-		Height: 600,
+		Title:             "ps2-utils",
+		Width:             1200,
+		Height:            600,
+		HideWindowOnClose: true,
 		AssetServer: &assetserver.Options{
 			Assets: assets,
 		},

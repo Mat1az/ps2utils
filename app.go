@@ -8,10 +8,10 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"strconv"
 	"strings"
 )
 
-// App struct
 type App struct {
 	ctx context.Context
 }
@@ -38,40 +38,77 @@ type ZSOHeader struct {
 	Unused  string `json:"unused"`
 }
 
-// NewApp creates a new App application struct
 func NewApp() *App {
 	return &App{}
 }
 
-// startup is called when the app starts. The context is saved
-// so we can call the runtime methods
 func (a *App) startup(ctx context.Context) {
 	a.ctx = ctx
 }
 
 func (a *App) SelectFile() []Game {
-	var files, _ = runtime.OpenMultipleFilesDialog(a.ctx, runtime.OpenDialogOptions{})
+	//FIXME Linux: App stop working/freeze after closing/cancel this dialog
+	//FIXME Windows: App crash on open
+	var files, err = runtime.OpenMultipleFilesDialog(a.ctx, runtime.OpenDialogOptions{})
 	var games []Game
-	for _, s := range files {
-		f, _ := os.Open(s)
-		zso := getZSOHeader(f)
-		isZSO := (ZSOHeader{}) != zso
-		stat, _ := f.Stat()
-		var fSize = formatSize(stat.Size())
-		var name = getName(stat.Name())
-		var format = getFormat(stat.Size(), isZSO)
-		games = append(games, Game{
-			format,
-			f.Name(),
-			name[0],
-			name[1],
-			fSize,
-			isOPL(filepath.Ext(name[1])),
-			isHDL(int(stat.Size())),
-			zso})
-		f.Close()
+	if err != nil {
+		fmt.Println("error ")
+		fmt.Println(err)
+	} else {
+		for _, s := range files {
+			f, _ := os.Open(s)
+			zso := getZSOHeader(f)
+			isZSO := (ZSOHeader{}) != zso
+			stat, _ := f.Stat()
+			var fSize = formatSize(stat.Size())
+			var name = getName(stat.Name())
+			var format = getFormat(stat.Size(), isZSO)
+			games = append(games, Game{
+				format,
+				f.Name(),
+				name[0],
+				name[1],
+				fSize,
+				isOPL(filepath.Ext(name[1])),
+				isHDL(int(stat.Size())),
+				zso})
+			f.Close()
+		}
 	}
 	return games
+}
+
+func (a *App) RepairFile(path string, id int) string {
+	switch id {
+	case 0:
+		//missing ID
+		/** ISO Priority
+		 * 1. Extract ID
+		 * 2. Checksum
+		 * 3. Hex Find
+		 *
+		 * ZSO Priority
+		 * 1. ZSO -> ISO
+		 */
+		return "Soon..."
+	case 1:
+		//opl
+		return "Soon..."
+	case 2:
+		//hdl
+		f, _ := os.OpenFile(path, os.O_RDWR|os.O_APPEND, os.ModeAppend)
+		stat, _ := f.Stat()
+		add := make([]byte, 2048-stat.Size()%2048)
+		f.Write(add)
+		f.Close()
+		return strconv.Itoa(len(add))
+	case 3:
+		//hdl, ZSO without ID
+		//same as case 0, ZSO
+		return "Soon..."
+	default:
+		return "Soon..."
+	}
 }
 
 func getFormat(s int64, isZSO bool) int {
