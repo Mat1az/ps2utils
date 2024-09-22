@@ -20,7 +20,7 @@ func main() {
 		Title:             "ps2-utils",
 		Width:             1200,
 		Height:            600,
-		HideWindowOnClose: true,
+		HideWindowOnClose: false,
 		AssetServer: &assetserver.Options{
 			Assets: assets,
 		},

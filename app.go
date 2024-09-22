@@ -46,34 +46,33 @@ func (a *App) startup(ctx context.Context) {
 	a.ctx = ctx
 }
 
+func (a *App) GetGame(path string) Game {
+	f, _ := os.Open(path)
+	zso := getZSOHeader(f)
+	isZSO := (ZSOHeader{}) != zso
+	stat, _ := f.Stat()
+	var fSize = formatSize(stat.Size())
+	var name = getName(stat.Name())
+	var format = getFormat(stat.Size(), isZSO)
+	g := Game{
+		format,
+		f.Name(),
+		name[0],
+		name[1],
+		fSize,
+		isOPL(filepath.Ext(name[1])),
+		isHDL(int(stat.Size())),
+		zso}
+	f.Close()
+	return g
+}
+
 func (a *App) SelectFile() []Game {
 	//FIXME Linux: App stop working/freeze after closing/cancel this dialog
-	//FIXME Windows: App crash on open
-	var files, err = runtime.OpenMultipleFilesDialog(a.ctx, runtime.OpenDialogOptions{})
+	var files, _ = runtime.OpenMultipleFilesDialog(a.ctx, runtime.OpenDialogOptions{})
 	var games []Game
-	if err != nil {
-		fmt.Println("error ")
-		fmt.Println(err)
-	} else {
-		for _, s := range files {
-			f, _ := os.Open(s)
-			zso := getZSOHeader(f)
-			isZSO := (ZSOHeader{}) != zso
-			stat, _ := f.Stat()
-			var fSize = formatSize(stat.Size())
-			var name = getName(stat.Name())
-			var format = getFormat(stat.Size(), isZSO)
-			games = append(games, Game{
-				format,
-				f.Name(),
-				name[0],
-				name[1],
-				fSize,
-				isOPL(filepath.Ext(name[1])),
-				isHDL(int(stat.Size())),
-				zso})
-			f.Close()
-		}
+	for _, s := range files {
+		games = append(games, a.GetGame(s))
 	}
 	return games
 }
@@ -109,6 +108,19 @@ func (a *App) RepairFile(path string, id int) string {
 	default:
 		return "Soon..."
 	}
+}
+
+func (a *App) GetHDL(path string) string {
+	g := a.GetGame(path)
+	//inject_cd/dvd ps2hdd_path game_name game_path game_startup
+	cmd := fmt.Sprintf("sudo hdl-dump %s %s '%s' '%s' '%s'",
+		map[bool]string{true: "inject_cd", false: "inject_dvd"}[g.Format == 1],
+		"/dev/sdx",
+		g.Name,
+		path,
+		g.Id)
+	fmt.Println(cmd)
+	return cmd
 }
 
 func getFormat(s int64, isZSO bool) int {

@@ -1,8 +1,10 @@
 <script>
-    import {RepairFile, SelectFile} from '../wailsjs/go/main/App';
+    import {GetHDL, RepairFile, SelectFile, GetGame} from '../wailsjs/go/main/App';
+    import {ClipboardSetText} from "../wailsjs/runtime/runtime.js";
 
+    //TODO MVC all this mess, create store
 
-    let games = []
+    $: games = []
     let index = 1
 
     let items = [
@@ -46,6 +48,24 @@
         SelectFile().then(r => {
             console.log(r);
             games = r
+        })
+    }
+    function reloadGame(e) {
+        //TODO Use store, for reactive array purposes
+        alert(games.length)
+        alert(games.push(GetGame(e.currentTarget.value)))
+        //e.currentTarget.parentNode.parentNode.remove();
+    }
+
+    function getHDL(e) {
+        GetHDL(e.currentTarget.value).then(r => {
+            if (confirm("Copy cmd to the clipboard? Change '/dev/sdx' to PS2 HDD location.\n\n" + r)) {
+                ClipboardSetText(r).then(() => {
+                    alert("Copied to the clipboard.")
+                }).catch(err => alert("Error: " + err))
+            } else {
+                alert("Cancelled")
+            }
         })
     }
 
@@ -174,45 +194,57 @@
                         {/if}
                     </td>
                     <td>
-                        {#if id.length !== 0}
-                            {id}
-                        {:else}
-                            <button value={url} class="hover:bg-slate-700 py-2 px-4 rounded"
-                                    on:click={(e)=>repair(0,e)}>
-                                &#10060;
-                            </button>
+                        {#if format !== -1}
+                            {#if id.length !== 0}
+                                {id}
+                            {:else}
+                                <button value={url} class="hover:bg-slate-700 py-2 px-4 rounded"
+                                        on:click={(e)=>repair(0,e)}>
+                                    &#10060;
+                                </button>
+                            {/if}
                         {/if}
                     </td>
                     <td>{name}</td>
                     <td>{size}</td>
                     <td>
-                        {#if opl}&#9989;
-                        {:else}
-                            <button value={url} class="hover:bg-slate-700 py-2 px-4 rounded"
-                                    on:click={(e)=>repair(1,e)}>
-                                &#10060;
-                            </button>
+                        {#if format !== -1}
+                            {#if opl}&#9989;
+                            {:else}
+                                <button value={url} class="hover:bg-slate-700 py-2 px-4 rounded"
+                                        on:click={(e)=>repair(1,e)}>
+                                    &#10060;
+                                </button>
+                            {/if}
                         {/if}
                     </td>
                     <td>
-                        {#if hdl}
-                            {#if format === 2 || format === 3 || format === 4}
-                                {#if id.length === 0}
-                                    <button value={url} class="hover:bg-slate-700 py-2 px-4 rounded"
-                                            on:click={(e)=>repair(3,e)}>
-                                        &#10060;
-                                    </button>
+                        {#if format !== -1}
+                            {#if hdl}
+                                {#if format === 2 || format === 3 || format === 4}
+                                    {#if id.length === 0}
+                                        <button value={url} class="hover:bg-slate-700 py-2 px-4 rounded"
+                                                on:click={(e)=>repair(3,e)}>
+                                            &#10060;
+                                        </button>
+                                    {:else}
+                                        <button value={url} class="hover:bg-slate-700 py-2 px-4 rounded"
+                                                on:click={(e)=>getHDL(e)}>
+                                            &#9989;
+                                        </button>
+                                    {/if}
                                 {:else}
-                                    &#9989;
+                                    <button value={url} class="hover:bg-slate-700 py-2 px-4 rounded"
+                                            on:click={(e)=>getHDL(e)}>
+                                        &#9989;
+                                    </button>
                                 {/if}
                             {:else}
-                                &#9989;
+                                <button value={url} class="hover:bg-slate-700 py-2 px-4 rounded"
+                                        on:click={(e)=>reloadGame(e)}>
+                                    &#10060;
+                                </button>
                             {/if}
-                        {:else}
-                            <button value={url} class="hover:bg-slate-700 py-2 px-4 rounded"
-                                    on:click={(e)=>repair(2,e)}>
-                                &#10060;
-                            </button>
                         {/if}
                     </td>
                     <td>
