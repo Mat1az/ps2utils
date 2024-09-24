@@ -1,4 +1,4 @@
-export namespace main {
+export namespace models {
 	
 	export class ZSOHeader {
 	    is_zso: boolean;
@@ -28,7 +28,7 @@ export namespace main {
 	}
 	export class Game {
 	    format: number;
-	    url: string;
+	    path: string;
 	    id: string;
 	    name: string;
 	    size: string;
@@ -43,7 +43,7 @@ export namespace main {
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.format = source["format"];
-	        this.url = source["url"];
+	        this.path = source["path"];
 	        this.id = source["id"];
 	        this.name = source["name"];
 	        this.size = source["size"];
